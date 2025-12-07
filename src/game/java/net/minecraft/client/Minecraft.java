@@ -24,6 +24,7 @@ import net.lax1dude.eaglercraft.v1_8.PauseMenuCustomizeState;
 import net.lax1dude.eaglercraft.v1_8.PointerInputAbstraction;
 import net.lax1dude.eaglercraft.v1_8.Touch;
 import net.lax1dude.eaglercraft.v1_8.cookie.ServerCookieDataStore;
+import net.lax1dude.eaglercraft.v1_8.marshall.MarshallFeatureController;
 
 import org.apache.commons.lang3.Validate;
 
@@ -1168,11 +1169,12 @@ public class Minecraft implements IThreadListener {
 	 * Runs the current tick.
 	 */
 	public void runTick() throws IOException {
-		if (this.rightClickDelayTimer > 0) {
-			--this.rightClickDelayTimer;
-		}
+if (this.rightClickDelayTimer > 0) {
+--this.rightClickDelayTimer;
+}
 
-		RateLimitTracker.tick();
+RateLimitTracker.tick();
+MarshallFeatureController.apply(this.gameSettings);
 
 		boolean isHostingLAN = LANServerController.isHostingLAN();
 		this.isGamePaused = !isHostingLAN && this.isSingleplayer() && this.theWorld != null && this.thePlayer != null

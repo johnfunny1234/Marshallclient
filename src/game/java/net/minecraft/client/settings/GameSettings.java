@@ -69,7 +69,7 @@ import net.optifine.CustomSky;
  * POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-public class GameSettings {
+	public class GameSettings {
 	private static final Logger logger = LogManager.getLogger();
 
 	/**+
@@ -198,6 +198,10 @@ public class GameSettings {
 	public boolean hudFps = true;
 	public boolean hudCoords = true;
 	public boolean hudPlayer = false;
+	public boolean marshallFullbright = false;
+	public boolean marshallNoHurtCam = false;
+	public boolean marshallCompassHud = false;
+	public float marshallBaseGamma = Float.NaN;
 	public boolean hudWorld = false;
 	public boolean hudStats = false;
 	public boolean hud24h = false;

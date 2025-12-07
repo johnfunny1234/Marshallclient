@@ -77,10 +77,10 @@ public class GuiOverlayDebug extends Gui {
 		playerOffset = 0;
 		int ww = scaledResolutionIn.getScaledWidth();
 		int hh = scaledResolutionIn.getScaledHeight();
-		if (this.mc.gameSettings.showDebugInfo) {
-			GlStateManager.pushMatrix();
-			this.renderDebugInfoLeft();
-			this.renderDebugInfoRight(scaledResolutionIn);
+if (this.mc.gameSettings.showDebugInfo) {
+GlStateManager.pushMatrix();
+this.renderDebugInfoLeft();
+this.renderDebugInfoRight(scaledResolutionIn);
 			GlStateManager.popMatrix();
 			if (this.mc.gameSettings.field_181657_aC) {
 				this.func_181554_e();
@@ -94,11 +94,15 @@ public class GuiOverlayDebug extends Gui {
 				i += 9;
 			}
 
-			if (this.mc.gameSettings.hudCoords) {
-				drawXYZ(2, i);
-			}
+if (this.mc.gameSettings.hudCoords) {
+drawXYZ(2, i);
+}
 
-		}
+if (this.mc.gameSettings.marshallCompassHud) {
+drawCompass(scaledResolutionIn);
+}
+
+}
 
 		if (this.mc.currentScreen == null || !(this.mc.currentScreen instanceof GuiChat)) {
 			if (this.mc.gameSettings.hudStats) {
@@ -129,12 +133,25 @@ public class GuiOverlayDebug extends Gui {
 		this.fontRenderer.drawStringWithShadow(this.mc.renderGlobal.getDebugInfoShort(), x, y, 0xFFFFFF);
 	}
 
-	private void drawXYZ(int x, int y) {
-		Entity e = mc.getRenderViewEntity();
-		BlockPos blockpos = new BlockPos(e.posX, e.getEntityBoundingBox().minY, e.posZ);
-		this.fontRenderer.drawStringWithShadow(
-				"x: " + blockpos.getX() + ", y: " + blockpos.getY() + ", z: " + blockpos.getZ(), x, y, 0xFFFFFF);
-	}
+private void drawXYZ(int x, int y) {
+Entity e = mc.getRenderViewEntity();
+BlockPos blockpos = new BlockPos(e.posX, e.getEntityBoundingBox().minY, e.posZ);
+this.fontRenderer.drawStringWithShadow(
+"x: " + blockpos.getX() + ", y: " + blockpos.getY() + ", z: " + blockpos.getZ(), x, y, 0xFFFFFF);
+}
+
+private void drawCompass(ScaledResolution scaledResolutionIn) {
+if (this.mc.thePlayer == null) {
+return;
+}
+
+float yaw = MathHelper.wrapAngleTo180_float(this.mc.thePlayer.rotationYaw);
+int facingIdx = MathHelper.floor_double((double) ((yaw / 90.0F) + 0.5D)) & 3;
+String facing = EnumFacing.getHorizontal(facingIdx).getName().toUpperCase(Locale.ROOT);
+String label = "Facing: " + facing + " (" + Math.round(yaw) + "°)";
+int x = scaledResolutionIn.getScaledWidth() / 2 - this.fontRenderer.getStringWidth(label) / 2;
+this.fontRenderer.drawStringWithShadow(label, x, 2, 0xFFFFFF);
+}
 
 	private void drawStatsHUD(int x, int y) {
 		int i = 9;
