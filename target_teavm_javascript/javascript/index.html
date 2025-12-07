@@ -3,18 +3,258 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
-		<meta name="description" content="EaglercraftX 1.8 test directory HTML page" />
-		<meta name="keywords" content="eaglercraft, eaglercraftx, minecraft, 1.8, 1.8.8" />
-		<title>EaglercraftX 1.8</title>
-		<meta property="og:locale" content="en-US" />
-		<meta property="og:type" content="website" />
-		<meta property="og:title" content="EaglercraftX 1.8" />
-		<meta property="og:description" content="test directory HTML page" />
-		<link type="image/png" rel="shortcut icon" href="favicon.png" />
-		<script type="text/javascript" src="classes.js"></script>
-		<script type="text/javascript">
-			"use strict";
-			window.addEventListener("load", function() {
+                <meta name="description" content="Marshall Client launcher" />
+                <meta name="keywords" content="marshall client, eaglercraftx, minecraft, 1.8, 1.8.8" />
+                <title>Marshall Client</title>
+                <meta property="og:locale" content="en-US" />
+                <meta property="og:type" content="website" />
+                <meta property="og:title" content="Marshall Client" />
+                <meta property="og:description" content="Marshall Client launcher" />
+                <link type="image/png" rel="shortcut icon" href="favicon.png" />
+                <script type="text/javascript" src="classes.js"></script>
+                <style>
+                        :root {
+                                --marshall-bg: rgba(14, 18, 24, 0.88);
+                                --marshall-surface: rgba(255, 255, 255, 0.04);
+                                --marshall-accent: #7ae3ff;
+                                --marshall-text: #e8edf6;
+                                --marshall-muted: #b6c2d3;
+                                --marshall-border: rgba(255, 255, 255, 0.1);
+                                --marshall-success: #6de39f;
+                        }
+
+                        body {
+                                font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+                                color: var(--marshall-text);
+                                position: relative;
+                        }
+
+                        .marshall-ui {
+                                position: fixed;
+                                inset: 0;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                background: radial-gradient(circle at 10% 10%, rgba(122, 227, 255, 0.08), transparent 32%),
+                                                radial-gradient(circle at 80% 0%, rgba(109, 227, 159, 0.12), transparent 35%),
+                                                var(--marshall-bg);
+                                backdrop-filter: blur(6px);
+                                opacity: 0;
+                                pointer-events: none;
+                                transform: translateY(12px);
+                                transition: opacity 240ms ease, transform 240ms ease;
+                                z-index: 25;
+                        }
+
+                        .marshall-ui.is-open {
+                                opacity: 1;
+                                pointer-events: auto;
+                                transform: translateY(0);
+                        }
+
+                        .marshall-ui__panel {
+                                width: min(1080px, 92vw);
+                                max-height: min(720px, 92vh);
+                                background: var(--marshall-surface);
+                                border: 1px solid var(--marshall-border);
+                                border-radius: 20px;
+                                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), 0 2px 16px rgba(0, 0, 0, 0.4);
+                                overflow: hidden;
+                                display: flex;
+                                flex-direction: column;
+                                backdrop-filter: blur(12px);
+                        }
+
+                        .marshall-ui__header {
+                                padding: 20px 24px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                gap: 12px;
+                                background: linear-gradient(120deg, rgba(122, 227, 255, 0.18), rgba(14, 18, 24, 0.2));
+                                border-bottom: 1px solid var(--marshall-border);
+                        }
+
+                        .marshall-ui__title {
+                                font-size: 20px;
+                                font-weight: 700;
+                                letter-spacing: 0.02em;
+                                color: var(--marshall-text);
+                                margin: 0;
+                        }
+
+                        .marshall-ui__subtitle {
+                                margin: 2px 0 0;
+                                color: var(--marshall-muted);
+                                font-size: 13px;
+                        }
+
+                        .marshall-ui__close {
+                                background: rgba(255, 255, 255, 0.08);
+                                border: 1px solid var(--marshall-border);
+                                color: var(--marshall-text);
+                                border-radius: 12px;
+                                width: 42px;
+                                height: 42px;
+                                font-size: 18px;
+                                cursor: pointer;
+                                transition: background 140ms ease, transform 140ms ease;
+                        }
+
+                        .marshall-ui__close:hover {
+                                background: rgba(255, 255, 255, 0.16);
+                                transform: translateY(-1px);
+                        }
+
+                        .marshall-ui__tabs {
+                                display: grid;
+                                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                                border-bottom: 1px solid var(--marshall-border);
+                        }
+
+                        .marshall-ui__tab {
+                                padding: 12px 16px;
+                                border: none;
+                                background: transparent;
+                                color: var(--marshall-muted);
+                                font-weight: 700;
+                                letter-spacing: 0.02em;
+                                cursor: pointer;
+                                border-bottom: 3px solid transparent;
+                                transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+                        }
+
+                        .marshall-ui__tab:hover {
+                                color: var(--marshall-text);
+                                background: rgba(255, 255, 255, 0.04);
+                        }
+
+                        .marshall-ui__tab.is-active {
+                                color: var(--marshall-text);
+                                border-color: var(--marshall-accent);
+                                background: rgba(122, 227, 255, 0.08);
+                        }
+
+                        .marshall-ui__content {
+                                padding: 20px 24px 24px;
+                                overflow-y: auto;
+                                display: grid;
+                                gap: 18px;
+                        }
+
+                        .marshall-ui__section {
+                                display: none;
+                                gap: 14px;
+                                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                        }
+
+                        .marshall-ui__section.is-active {
+                                display: grid;
+                        }
+
+                        .marshall-ui__card {
+                                padding: 16px;
+                                background: rgba(255, 255, 255, 0.02);
+                                border: 1px solid var(--marshall-border);
+                                border-radius: 14px;
+                                display: flex;
+                                flex-direction: column;
+                                gap: 10px;
+                                position: relative;
+                                box-shadow: 0 10px 26px rgba(0, 0, 0, 0.24);
+                        }
+
+                        .marshall-ui__label {
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                gap: 10px;
+                                font-weight: 700;
+                        }
+
+                        .marshall-ui__desc {
+                                margin: 0;
+                                color: var(--marshall-muted);
+                                line-height: 1.4;
+                                font-size: 13px;
+                        }
+
+                        .marshall-ui__pill {
+                                display: inline-block;
+                                padding: 4px 10px;
+                                border-radius: 999px;
+                                background: rgba(122, 227, 255, 0.14);
+                                border: 1px solid var(--marshall-border);
+                                color: var(--marshall-text);
+                                font-size: 11px;
+                                letter-spacing: 0.02em;
+                                text-transform: uppercase;
+                        }
+
+                        .marshall-toggle {
+                                appearance: none;
+                                width: 48px;
+                                height: 26px;
+                                border-radius: 999px;
+                                background: rgba(255, 255, 255, 0.12);
+                                border: 1px solid var(--marshall-border);
+                                position: relative;
+                                cursor: pointer;
+                                transition: background 140ms ease, border-color 140ms ease;
+                        }
+
+                        .marshall-toggle::after {
+                                content: "";
+                                position: absolute;
+                                top: 3px;
+                                left: 4px;
+                                width: 18px;
+                                height: 18px;
+                                border-radius: 50%;
+                                background: var(--marshall-text);
+                                transition: transform 140ms ease, background 140ms ease;
+                        }
+
+                        .marshall-toggle:checked {
+                                background: linear-gradient(120deg, var(--marshall-accent), var(--marshall-success));
+                                border-color: rgba(122, 227, 255, 0.5);
+                        }
+
+                        .marshall-toggle:checked::after {
+                                transform: translateX(20px);
+                                background: #0b1320;
+                        }
+
+                        .marshall-ui__hint {
+                                position: fixed;
+                                bottom: 16px;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                padding: 10px 16px;
+                                background: rgba(0, 0, 0, 0.4);
+                                color: var(--marshall-muted);
+                                border-radius: 12px;
+                                border: 1px solid var(--marshall-border);
+                                backdrop-filter: blur(6px);
+                                font-size: 13px;
+                                letter-spacing: 0.01em;
+                                z-index: 20;
+                        }
+
+                        @media (max-width: 720px) {
+                                .marshall-ui__panel {
+                                        width: 95vw;
+                                        max-height: 90vh;
+                                }
+
+                                .marshall-ui__section {
+                                        grid-template-columns: 1fr;
+                                }
+                        }
+                </style>
+                <script type="text/javascript">
+                        "use strict";
+                        window.addEventListener("load", function() {
 				if(window.location.href.indexOf("file:") === 0) {
 					alert("HTTP please, do not open this file locally, run a local HTTP server and load it via HTTP");
 				}else {
@@ -44,11 +284,213 @@
 						if(s) window.eaglercraftXOpts.joinServer = s;
 					}
 
-					main();
-				}
-			});
-		</script>
-	</head>
-	<body style="margin:0px;width:100%;height:100%;overflow:hidden;background-color:black;" id="game_frame">
-	</body>
+                                        main();
+                                        window.dispatchEvent(new Event("marshallReady"));
+                                }
+                        });
+                </script>
+        </head>
+        <body style="margin:0px;width:100%;height:100%;overflow:hidden;background-color:black;" id="game_frame">
+                <div class="marshall-ui" id="marshall-ui" aria-hidden="true">
+                        <div class="marshall-ui__panel" role="dialog" aria-labelledby="marshall-title">
+                                <div class="marshall-ui__header">
+                                        <div>
+                                                <p class="marshall-ui__title" id="marshall-title">Marshall Client</p>
+                                                <p class="marshall-ui__subtitle">Press ' to toggle this overlay. Settings are saved locally.</p>
+                                        </div>
+                                        <button class="marshall-ui__close" id="marshall-close" aria-label="Close Marshall UI">&times;</button>
+                                </div>
+                                <div class="marshall-ui__tabs" role="tablist">
+                                        <button class="marshall-ui__tab is-active" data-tab="render" role="tab" aria-controls="marshall-tab-render">Render</button>
+                                        <button class="marshall-ui__tab" data-tab="pvp" role="tab" aria-controls="marshall-tab-pvp">PvP</button>
+                                        <button class="marshall-ui__tab" data-tab="utility" role="tab" aria-controls="marshall-tab-utility">Utilities</button>
+                                </div>
+                                <div class="marshall-ui__content">
+                                        <section class="marshall-ui__section is-active" id="marshall-tab-render" data-section="render" role="tabpanel">
+                                                <div class="marshall-ui__card">
+                                                        <div class="marshall-ui__label">
+                                                                <span>Fullbright</span>
+                                                                <input class="marshall-toggle" type="checkbox" data-pref="fullbright" />
+                                                        </div>
+                                                        <p class="marshall-ui__desc">Light up every cave and hallway for visibility without relying on in-game torches.</p>
+                                                        <span class="marshall-ui__pill">Render</span>
+                                                </div>
+                                                <div class="marshall-ui__card">
+                                                        <div class="marshall-ui__label">
+                                                                <span>Smooth Animations</span>
+                                                                <input class="marshall-toggle" type="checkbox" data-pref="smoothAnimations" />
+                                                        </div>
+                                                        <p class="marshall-ui__desc">Keep UI and motion silky with eased transitions on interface elements.</p>
+                                                        <span class="marshall-ui__pill">Render</span>
+                                                </div>
+                                                <div class="marshall-ui__card">
+                                                        <div class="marshall-ui__label">
+                                                                <span>Clear Water</span>
+                                                                <input class="marshall-toggle" type="checkbox" data-pref="clearWater" />
+                                                        </div>
+                                                        <p class="marshall-ui__desc">Reduce underwater fog for better visibility when exploring oceans or rivers.</p>
+                                                        <span class="marshall-ui__pill">Render</span>
+                                                </div>
+                                        </section>
+                                        <section class="marshall-ui__section" id="marshall-tab-pvp" data-section="pvp" role="tabpanel">
+                                                <div class="marshall-ui__card">
+                                                        <div class="marshall-ui__label">
+                                                                <span>No Hurt Camera</span>
+                                                                <input class="marshall-toggle" type="checkbox" data-pref="noHurtCam" />
+                                                        </div>
+                                                        <p class="marshall-ui__desc">Remove the hurt-camera shake so you can keep aim consistent during fights.</p>
+                                                        <span class="marshall-ui__pill">PvP</span>
+                                                </div>
+                                                <div class="marshall-ui__card">
+                                                        <div class="marshall-ui__label">
+                                                                <span>Hit Feedback</span>
+                                                                <input class="marshall-toggle" type="checkbox" data-pref="hitFeedback" />
+                                                        </div>
+                                                        <p class="marshall-ui__desc">Visualize your last few hits with subtle on-screen cues.</p>
+                                                        <span class="marshall-ui__pill">PvP</span>
+                                                </div>
+                                                <div class="marshall-ui__card">
+                                                        <div class="marshall-ui__label">
+                                                                <span>Quick Pots</span>
+                                                                <input class="marshall-toggle" type="checkbox" data-pref="quickPots" />
+                                                        </div>
+                                                        <p class="marshall-ui__desc">Highlight hotbar slots for splash or healing items so they are easier to track.</p>
+                                                        <span class="marshall-ui__pill">PvP</span>
+                                                </div>
+                                        </section>
+                                        <section class="marshall-ui__section" id="marshall-tab-utility" data-section="utility" role="tabpanel">
+                                                <div class="marshall-ui__card">
+                                                        <div class="marshall-ui__label">
+                                                                <span>Compass HUD</span>
+                                                                <input class="marshall-toggle" type="checkbox" data-pref="compassHud" />
+                                                        </div>
+                                                        <p class="marshall-ui__desc">Overlay directional guidance to keep your bearings while exploring.</p>
+                                                        <span class="marshall-ui__pill">Utilities</span>
+                                                </div>
+                                                <div class="marshall-ui__card">
+                                                        <div class="marshall-ui__label">
+                                                                <span>Mini Map</span>
+                                                                <input class="marshall-toggle" type="checkbox" data-pref="miniMap" />
+                                                        </div>
+                                                        <p class="marshall-ui__desc">Compact map overlay inspired by WAILA to surface nearby points of interest.</p>
+                                                        <span class="marshall-ui__pill">Utilities</span>
+                                                </div>
+                                                <div class="marshall-ui__card">
+                                                        <div class="marshall-ui__label">
+                                                                <span>Coordinates Overlay</span>
+                                                                <input class="marshall-toggle" type="checkbox" data-pref="coordinatesOverlay" />
+                                                        </div>
+                                                        <p class="marshall-ui__desc">Pin your XYZ location to the screen for navigation and building reference.</p>
+                                                        <span class="marshall-ui__pill">Utilities</span>
+                                                </div>
+                                        </section>
+                                </div>
+                        </div>
+                </div>
+                <div class="marshall-ui__hint" id="marshall-hint">Press ' to open the Marshall Client overlay</div>
+                <script type="text/javascript">
+                        (function() {
+                                "use strict";
+
+                                var ui = document.getElementById("marshall-ui");
+                                var hint = document.getElementById("marshall-hint");
+                                var closeBtn = document.getElementById("marshall-close");
+                                var storageKey = "marshallClientPrefs";
+                                var activeTab = "render";
+
+                                function restoreToggles() {
+                                        try {
+                                                var raw = localStorage.getItem(storageKey);
+                                                if(!raw) return;
+                                                var prefs = JSON.parse(raw);
+                                                document.querySelectorAll(".marshall-toggle").forEach(function(toggle) {
+                                                        var prefKey = toggle.getAttribute("data-pref");
+                                                        if(prefKey && Object.prototype.hasOwnProperty.call(prefs, prefKey)) {
+                                                                toggle.checked = Boolean(prefs[prefKey]);
+                                                        }
+                                                });
+                                        } catch (err) {
+                                                console.warn("Marshall UI could not restore preferences", err);
+                                        }
+                                }
+
+                                function saveToggles() {
+                                        var prefs = {};
+                                        document.querySelectorAll(".marshall-toggle").forEach(function(toggle) {
+                                                var prefKey = toggle.getAttribute("data-pref");
+                                                if(prefKey) {
+                                                        prefs[prefKey] = toggle.checked;
+                                                }
+                                        });
+                                        try {
+                                                localStorage.setItem(storageKey, JSON.stringify(prefs));
+                                        } catch (err) {
+                                                console.warn("Marshall UI could not save preferences", err);
+                                        }
+                                }
+
+                                function setTab(name) {
+                                        if(activeTab === name) return;
+                                        activeTab = name;
+                                        document.querySelectorAll(".marshall-ui__tab").forEach(function(tab) {
+                                                var isActive = tab.getAttribute("data-tab") === name;
+                                                tab.classList.toggle("is-active", isActive);
+                                        });
+                                        document.querySelectorAll(".marshall-ui__section").forEach(function(section) {
+                                                var isActive = section.getAttribute("data-section") === name;
+                                                section.classList.toggle("is-active", isActive);
+                                                section.setAttribute("aria-hidden", isActive ? "false" : "true");
+                                        });
+                                }
+
+                                function openUI() {
+                                        ui.classList.add("is-open");
+                                        ui.setAttribute("aria-hidden", "false");
+                                }
+
+                                function closeUI() {
+                                        ui.classList.remove("is-open");
+                                        ui.setAttribute("aria-hidden", "true");
+                                }
+
+                                function toggleUI() {
+                                        if(ui.classList.contains("is-open")) {
+                                                closeUI();
+                                        } else {
+                                                openUI();
+                                        }
+                                }
+
+                                document.addEventListener("keydown", function(event) {
+                                        if(event.key === "'" && !event.ctrlKey && !event.metaKey && !event.altKey) {
+                                                event.preventDefault();
+                                                toggleUI();
+                                        } else if(event.key === "Escape" && ui.classList.contains("is-open")) {
+                                                closeUI();
+                                        }
+                                });
+
+                                closeBtn.addEventListener("click", closeUI);
+
+                                document.querySelectorAll(".marshall-ui__tab").forEach(function(tab) {
+                                        tab.addEventListener("click", function() {
+                                                setTab(tab.getAttribute("data-tab"));
+                                        });
+                                });
+
+                                document.querySelectorAll(".marshall-toggle").forEach(function(toggle) {
+                                        toggle.addEventListener("change", saveToggles);
+                                });
+
+                                restoreToggles();
+                                setTab(activeTab);
+
+                                window.addEventListener("marshallReady", function() {
+                                        if(hint) {
+                                                hint.textContent = "Press ' to open the Marshall Client overlay";
+                                        }
+                                });
+                        })();
+                </script>
+        </body>
 </html>
