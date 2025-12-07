@@ -414,20 +414,21 @@
                                         }
                                 }
 
-                                function saveToggles() {
-                                        var prefs = {};
-                                        document.querySelectorAll(".marshall-toggle").forEach(function(toggle) {
-                                                var prefKey = toggle.getAttribute("data-pref");
-                                                if(prefKey) {
-                                                        prefs[prefKey] = toggle.checked;
-                                                }
-                                        });
-                                        try {
-                                                localStorage.setItem(storageKey, JSON.stringify(prefs));
-                                        } catch (err) {
-                                                console.warn("Marshall UI could not save preferences", err);
-                                        }
-                                }
+function saveToggles() {
+var prefs = {};
+document.querySelectorAll(".marshall-toggle").forEach(function(toggle) {
+var prefKey = toggle.getAttribute("data-pref");
+if(prefKey) {
+prefs[prefKey] = toggle.checked;
+}
+});
+try {
+localStorage.setItem(storageKey, JSON.stringify(prefs));
+window.dispatchEvent(new CustomEvent("marshallPrefsUpdated", { detail: prefs }));
+} catch (err) {
+console.warn("Marshall UI could not save preferences", err);
+}
+}
 
                                 function setTab(name) {
                                         if(activeTab === name) return;
